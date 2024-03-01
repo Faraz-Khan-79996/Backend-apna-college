@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta</title>
+    <link rel="stylesheet" href="/insta_css/style.css">
+    <!-- public/css is already known to ejs as we've set it as static folder -->
+    <!-- You can also give the full path if you want -->
+</head>
+<body>
+    <h2>This page belongs to <strong><%= user.name %></strong> </h2>
+    <button>Follow</button>
+    <button>Message</button>
+    <hr>
+    <p>Followers : <%= user.followers %> &nbsp; &nbsp;
+        Followers : <%= user.following %></p>
+
+        <% for(const post of user.posts){ %>
+            <img src="<%= post.image %>" alt="">
+            <p>
+                Likes : <%= post.likes %> &nbsp;&nbsp;&nbsp;&nbsp;
+                <%= post.comments %>
+
+            </p>
+        <% } %>
+        <%- include("../includes/footer.ejs") %>
+        <!-- Path relative to current directory -->
+</body> 
+<script src="/insta_js/app.js"></script>
+<!-- ejs knows it has to look in public/javascript as we've set it as static -->
+<!-- You can also give the full path if you want -->
+</html>
