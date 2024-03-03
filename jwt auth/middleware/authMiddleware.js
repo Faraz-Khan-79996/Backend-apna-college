@@ -8,7 +8,7 @@ const requireAuth = (req, res, next) => {
   // check json web token exists & is verified
   if (token) {
     //jwt.verify(token , secret , func(error , decodedToken))
-    jwt.verify(token, 'net ninja secret', (err, decodedToken) => {
+    jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
       if (err) {
         console.log(err.message);
         res.redirect('/login');
@@ -32,7 +32,7 @@ const checkUser = (req, res, next) => {
 
   const token = req.cookies.jwt;
   if (token) {
-    jwt.verify(token, 'net ninja secret', async (err, decodedToken) => {
+    jwt.verify(token, process.env.SECRET, async (err, decodedToken) => {
       if (err) {
         res.locals.user = null;
         //we're giving it null instead of not creating user in local at all because,

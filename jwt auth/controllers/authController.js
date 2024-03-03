@@ -40,7 +40,7 @@ const handleErrors = (err) => {
 const maxAge = 3 * 24 * 60 * 60;//3 days in seconds
 const createToken = (id) => {
   // (string_to_make , secret_string , {options})
-  return jwt.sign({ id }, 'net ninja secret', {
+  return jwt.sign({ id }, process.env.SECRET, {
     expiresIn: maxAge//seconds
   });
 };
