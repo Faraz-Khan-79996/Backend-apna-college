@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Example</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px; /* Add margin to separate from the top */
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>  
+
+</head>
+
+<body>
+    <form id="uploadForm">
+        <h1>Upload File</h1>
+        <label for="u">Username:</label>
+        <input 
+            type="text" 
+            id="u" 
+            name="username" 
+            required
+        >
+        <br><br>
+
+        <label for="file">File:</label>
+        <input 
+            type="file" 
+            id="f" 
+            name="name_of_file" 
+            required
+            >
+            <br><br>
+
+        <input type="submit" value="Upload">
+    </form>
+
+    <script>
+        uploadForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            let username = u.value;
+            let file = f.files[0];
+            //input type files will have 'files' array instead of 'value'
+
+            //in order to send files from our form, we have to create
+            //instance of FormData() so that we can send in 'multipart/form-data' content type.
+            //This content type is mandatory if you are sending files in your form, otherwise 
+            //you could have sended it in json or urlencoded form as well.
+            let formData = new FormData();
+            formData.append('username', username);
+            formData.append('name_of_file', file);
+
+            // In case of axios
+            axios.post('https://example.com/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+
+            //In case of fetch
+            fetch('http://localhost:3000/post', {
+                method: 'POST',
+                body: formData
+                //in case of FormData(), content type is set on it's own
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('File uploaded successfully');
+                    } else {
+                        alert('Failed to upload file');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while uploading the file');
+                });
+        });
+    </script>
+</body>
+
+</html>
