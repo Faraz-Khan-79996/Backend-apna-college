@@ -8,8 +8,6 @@ Multer is a node.js middleware for handling `multipart/form-data`.
 
 Multer adds a `body` object and a `file` or `files` object to the `request` object. The `body` object contains the values of the text fields of the form, the `file` or `files` object contains the files uploaded via the form.
 
-
-
 when submitting form from script, to replicate multipart/form-data, use :
 
 ```apache
@@ -46,3 +44,8 @@ let file = f.files[0];
                 //in case of FormData(), content type is set on it's own
             })
 ```
+
+
+### Upload the saved file on the local server on cloudinary and delete.
+
+see the code for that.

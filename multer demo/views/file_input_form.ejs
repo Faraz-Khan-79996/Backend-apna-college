@@ -7,7 +7,7 @@
     <title>File Upload Example</title>
 
     <style>
-        body {
+        #container {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
@@ -29,7 +29,8 @@
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-top: 20px; /* Add margin to separate from the top */
+            margin-top: 20px;
+            /* Add margin to separate from the top */
         }
 
         label {
@@ -56,33 +57,39 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
-    </style>  
+
+        #img {
+            height: 500px;
+            width: 700px;
+        }
+        #img-container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 
 </head>
 
 <body>
-    <form id="uploadForm">
-        <h1>Upload File</h1>
-        <label for="u">Username:</label>
-        <input 
-            type="text" 
-            id="u" 
-            name="username" 
-            required
-        >
-        <br><br>
-
-        <label for="file">File:</label>
-        <input 
-            type="file" 
-            id="f" 
-            name="name_of_file" 
-            required
-            >
+    <div id="container">
+        <form id="uploadForm">
+            <h1>Upload File</h1>
+            <label for="u">Username:</label>
+            <input type="text" id="u" name="username" required>
             <br><br>
 
-        <input type="submit" value="Upload">
-    </form>
+            <label for="file">File:</label>
+            <input type="file" id="f" name="name_of_file" required>
+            <br><br>
+
+            <input type="submit" value="Upload">
+        </form>
+    </div>
+    <br><br><br><br>
+    <div id="img-container">
+        <img id="img" src="" hidden>
+    </div>
 
     <script>
         uploadForm.addEventListener('submit', function (event) {
@@ -101,11 +108,11 @@
             formData.append('name_of_file', file);
 
             // In case of axios
-            axios.post('https://example.com/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
+            // axios.post('https://example.com/upload', formData, {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data'
+            //     }
+            // })
 
             //In case of fetch
             fetch('http://localhost:3000/post', {
@@ -116,6 +123,11 @@
                 .then(response => {
                     if (response.ok) {
                         alert('File uploaded successfully');
+                        response.json()
+                            .then(result => {
+                                img.setAttribute("src", result.url);
+                                img.removeAttribute("hidden");
+                            })
                     } else {
                         alert('Failed to upload file');
                     }
