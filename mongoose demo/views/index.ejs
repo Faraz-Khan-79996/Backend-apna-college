@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Whatsapp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>All chats</h1>
+    <button><a href="/chats/form">Create new</a></button>
+    <br><br><br>
+    <% for(chat of chats){ %>
+        <div class="chat">
+            <p>From : <i>
+                    <%= chat.from %>
+                </i>
+            </p>
+            <div class="msg">
+                <form action="/chats/edit/<%= chat._id %>">
+                <button>Edit</button></form>
+
+                <!-- You can't directly send request other than GET or POST directly -->
+                <!-- method-override library is used for that. -->
+                <!-- apply _method=DELETE as query string and form method as POST -->
+                <form action="/chats/<%= chat._id %>?_method=DELETE" method="post">
+                    <button>Delete</button>
+                </form>
+                <p>
+                    <%= chat.msg %>
+                </p>
+            </div>
+            <p>Received by : <i>
+                    <%= chat.to %>
+                </i>
+            </p>
+            <p id="date">
+                <%= chat.created_at.toString().split(" ")[4] %><br>
+                <%= chat.created_at.toString().split(" ").slice(0,4).join("-")%>
+                <!-- Node API works inside  EJS-->
+            </p>
+        </div>
+        <hr>
+        <% } %>
+        
+
+</body>
+</html>
