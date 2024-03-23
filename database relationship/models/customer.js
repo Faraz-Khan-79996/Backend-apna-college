@@ -28,13 +28,44 @@ const customerSchema = new mongoose.Schema({
     ]
 })
 
+//In case of "save"
+//If you use arrow function, you won't get access to this.
+//Use normal function if you want to make changes to the data before saving.
+customerSchema.pre("save" , function (next) {
+    //You can access object about to be saved using this keyword.
+    console.log("Pre-Hool : save : ",this.name);
+    next() //call next as it's a middleware.
+})
+
+
+customerSchema.pre("findOneAndDelete" , function (next) {
+    //You can access using this keyword.
+    //console.log(this.name);//it's NOT the object which is about to be deleted.
+    console.log( "PRE-HOOK  " , this.getQuery());//it's the objectId which is about to be deleted.
+    next() //call next as it's a middleware.
+})
+
+//When you delete a customer, you want to delete all the corresponding 'orders'.
+//'orders' contain ObjectId of of docuemtns of 'orders' collection.
+customerSchema.post("findOneAndDelete" , async(customer)=>{
+    console.log("POST deleting document")
+    
+    const all_orders = customer.orders.length;//customer.orders  is an array.
+    if(all_orders){
+        const res = await Order.deleteMany({_id : {$in : customer.orders}})
+        //we're all the ObjectId's in customer.orders array will get deleted.
+        console.log(res);
+    }
+    //You don't have next() here as it's post operation
+})
+
 
 //Create model for both schema
 const Order = mongoose.model('Order' , orderSchema)
 const Customer = mongoose.model('Customer' , customerSchema)
 
 const addCustomer = async ()=>{
-
+    console.log("adding customers");
     //clear the collection for simplicity.
     await Customer.deleteMany({})
 
@@ -64,11 +95,32 @@ const getCostumer = async ()=>{
     const result = await Customer.findOne({}).populate('orders')
     //populates the 'orders' which is containing the ObjectId with the actual objects.
     //basically finds the document with the stored ObjectId and and attaches it at the place.
-    console.log(result);
+    console.log(result?result : "no customer");
+}
+
+const deleteCustomer = async()=>{
+
+    //There's only one user in the database
+    //Take out it's id.
+    const customer = await Customer.findOne({})
+    // console.log(id);
+    if(!customer){
+        console.log("DATABASE EMPTY");
+    }
+    else{
+
+
+        const id = customer._id;
+        await Customer.findByIdAndDelete(id)
+        console.log("DELETED");
+    }
+    
 }
 
 //Run it only once, used to initialise orders collection.
 const addOrders = async ()=>{
+    await Order.deleteMany({})
+    console.log("Adding orders");
     const res = await Order.insertMany([
         {
             item : "laptop",
@@ -86,6 +138,11 @@ const addOrders = async ()=>{
 
     console.log(res);
 }
-// addOrders() //Run once
+addOrders() //Run once
 // addCustomer()
-getCostumer()
+// getCostumer()
+//deleteCustomer() //make sure atleast one customer is there in DB when you call delete
+
+setTimeout(addCustomer , 2000)
+setTimeout(deleteCustomer , 4000)
+

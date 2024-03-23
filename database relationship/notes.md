@@ -53,3 +53,49 @@ const result=await Customer.findOne({}).populate('orders')
 ## One to Squillions
 
 opposit of the above approach. We will store the reference to the parent inside of the child.
+
+
+## Handling deletion using mongoose middleware
+
+In out example customer.js , we're creating a user having some orders. User and Order are two models. When user is deleted, we want all the order deleted as well.
+
+We use mongoose 'pre' 'post' middlewares which executers before and after query is executed.
+
+In case of pre "save", you can access the object and modify it using `this`. In case of pre "findOneAndDelete" , this is the query object. You have to call `next()` in pre middlware. It's always a good idea.
+
+in Post hook or middlware, function parameter is the document which we are working. No `next()` in post hook.
+
+
+```apache
+//In case of "save"
+//If you use arrow function, you won't get access to this.
+//Use normal function if you want to make changes to the data before saving.
+customerSchema.pre("save" , function (next) {
+    //You can access object about to be saved using this keyword.
+    console.log("Pre-Hool : save : ",this.name);
+    next() //call next as it's a middleware.
+})
+
+
+customerSchema.pre("findOneAndDelete" , function (next) {
+    //You can access using this keyword.
+    //console.log(this.name);//it's NOT the object which is about to be deleted.
+    console.log( "PRE-HOOK  " , this.getQuery());//this is a query object, getQure()it's the objectId which is about to be deleted.
+    next() //call next as it's a middleware.
+})
+
+//When you delete a customer, you want to delete all the corresponding 'orders'.
+//'orders' contain ObjectId of of docuemtns of 'orders' collection.
+customerSchema.post("findOneAndDelete" , async(customer)=>{
+    console.log("POST deleting document")
+  
+    const all_orders = customer.orders.length;//customer.orders  is an array.
+    if(all_orders){
+        const res = await Order.deleteMany({_id : {$in : customer.orders}})
+        //we're all the ObjectId's in customer.orders array will get deleted.
+        console.log(res);
+    }
+    //You don't have next() here as it's post operation
+})
+
+```
